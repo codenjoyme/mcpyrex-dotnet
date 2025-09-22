@@ -67,6 +67,7 @@ Invoke-Echo "dotnet add package DotNetEnv --version 3.1.0"
 Invoke-Echo "dotnet add package YamlDotNet --version 15.1.2"
 Invoke-Echo "dotnet add package Microsoft.Extensions.Logging --version 8.0.0"
 Invoke-Echo "dotnet add package Microsoft.Extensions.Logging.Console --version 8.0.0"
+Invoke-Echo "dotnet add package Microsoft.Extensions.Hosting --version 8.0.0"
 
 # Verify installation
 Invoke-Echo "dotnet restore"

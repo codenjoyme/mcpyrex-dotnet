@@ -25,20 +25,18 @@ public static class LoggingConfig
             return existingLogger;
         }
 
-        // Ensure logs directory exists
-        var logsDir = Path.Combine(Directory.GetCurrentDirectory(), "logs");
+        // Ensure logs directory exists in .mcp-dotnet project folder
+        var projectDir = AppContext.BaseDirectory; // bin/Debug/net8.0/
+        var mcpDotnetDir = Path.GetFullPath(Path.Combine(projectDir, "..", "..", "..")); // Back to .mcp-dotnet
+        var logsDir = Path.Combine(mcpDotnetDir, "logs");
         Directory.CreateDirectory(logsDir);
 
-        // Create logger factory if not exists
+        // Create logger factory if not exists - FILE ONLY for MCP stdio mode
         _loggerFactory ??= LoggerFactory.Create(builder =>
         {
             builder
                 .SetMinimumLevel(logLevel)
-                .AddConsole(options =>
-                {
-                    options.IncludeScopes = true;
-                    options.TimestampFormat = "yyyy-MM-dd HH:mm:ss.fff ";
-                })
+                // NO CONSOLE LOGGING in MCP mode - stdout reserved for JSON-RPC
                 .AddProvider(new FileLoggerProvider(logsDir));
         });
 
@@ -117,7 +115,8 @@ public class FileLoggerProvider : ILoggerProvider
     {
         if (!_loggers.TryGetValue(categoryName, out var logger))
         {
-            logger = new FileLogger(categoryName, _logsDirectory);
+            // All loggers write to the same mcp_server.log file for unified logging
+            logger = new FileLogger(categoryName, _logsDirectory, "mcp_server.log");
             _loggers[categoryName] = logger;
         }
         return logger;
@@ -142,17 +141,57 @@ public class FileLogger : ILogger, IDisposable
     private readonly StreamWriter _fileWriter;
     private readonly object _lock = new();
 
-    public FileLogger(string categoryName, string logsDirectory)
+    public FileLogger(string categoryName, string logsDirectory, string logFileName = null)
     {
         _categoryName = categoryName;
         
-        // Create log file path
-        var logFileName = $"{categoryName}.log";
-        var logFilePath = Path.Combine(logsDirectory, logFileName);
+        // Ensure logs directory exists
+        Directory.CreateDirectory(logsDirectory);
         
-        // Create file stream with UTF-8 encoding and append mode
-        var fileStream = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
-        _fileWriter = new StreamWriter(fileStream, Encoding.UTF8) { AutoFlush = true };
+        // Use provided log file name or create one from category name
+        string actualLogFileName;
+        if (!string.IsNullOrEmpty(logFileName))
+        {
+            actualLogFileName = logFileName;
+        }
+        else
+        {
+            // Clean category name for file name (remove problematic characters and shorten if needed)
+            var cleanCategoryName = categoryName
+                .Replace("Microsoft.Extensions.Hosting.Internal.", "Hosting.")
+                .Replace("ModelContextProtocol.Server.", "MCP.")
+                .Replace("Microsoft.", "MS.")
+                .Replace("..", ".");
+            
+            // Limit file name length to avoid path too long issues
+            if (cleanCategoryName.Length > 50)
+            {
+                cleanCategoryName = cleanCategoryName.Substring(0, 47) + "...";
+            }
+            
+            actualLogFileName = $"{cleanCategoryName}.log";
+        }
+        
+        var logFilePath = Path.Combine(logsDirectory, actualLogFileName);
+        
+        try
+        {
+            // Create file stream with UTF-8 encoding and append mode
+            // FileShare.ReadWrite allows multiple processes to access the same log file
+            var fileStream = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            _fileWriter = new StreamWriter(fileStream, Encoding.UTF8) { AutoFlush = true };
+        }
+        catch (Exception ex)
+        {
+            // Fallback: if file creation fails, create a generic log file
+            var fallbackPath = Path.Combine(logsDirectory, "mcp_fallback.log");
+            var fileStream = new FileStream(fallbackPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            _fileWriter = new StreamWriter(fileStream, Encoding.UTF8) { AutoFlush = true };
+            
+            // Log the error to the fallback file
+            _fileWriter.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - ERROR - Failed to create log for {categoryName}: {ex.Message}");
+            _fileWriter.Flush();
+        }
     }
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
@@ -174,8 +213,14 @@ public class FileLogger : ILogger, IDisposable
         var levelString = logLevel.ToString().ToUpper();
         var message = formatter(state, exception);
         
-        // Format log entry similar to Python version
-        var logEntry = $"{timestamp} - {_categoryName} - {levelString} - {message}";
+        // Clean category name for display
+        var displayCategory = _categoryName
+            .Replace("Microsoft.Extensions.Hosting.Internal.", "Hosting.")
+            .Replace("ModelContextProtocol.Server.", "MCP.")
+            .Replace("Microsoft.", "MS.");
+        
+        // Format log entry similar to Python version with category
+        var logEntry = $"{timestamp} - {displayCategory} - {levelString} - {message}";
         
         if (exception != null)
         {
