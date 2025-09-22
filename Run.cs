@@ -789,6 +789,100 @@ public static class Run
     }
 
     /// <summary>
+    /// Analyze .NET libraries (like Python analyze_libs)
+    /// </summary>
+    private static async Task AnalyzeLibraries(string[] libraries)
+    {
+        try
+        {
+            Console.WriteLine($"🔍 Starting analysis of {libraries.Length} library(ies)...");
+            Console.WriteLine($"Libraries to analyze: {string.Join(", ", libraries)}");
+            Console.WriteLine();
+
+            using var httpClient = new HttpClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(10);
+
+            foreach (var library in libraries)
+            {
+                try
+                {
+                    Console.WriteLine($"📦 Analyzing: {library}");
+                    Console.WriteLine(new string('-', 50));
+
+                    // For .NET, we'll use NuGet API instead of PyPI
+                    var url = $"https://api.nuget.org/v3-flatcontainer/{library.ToLower()}/index.json";
+                    var response = await httpClient.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var versionData = JsonSerializer.Deserialize<JsonElement>(content);
+                        
+                        var versions = versionData.GetProperty("versions").EnumerateArray()
+                            .Select(v => v.GetString()).ToArray();
+
+                        Console.WriteLine($"✅ Found {versions.Length} versions");
+                        Console.WriteLine($"📊 Latest version: {versions.LastOrDefault() ?? "N/A"}");
+                        Console.WriteLine($"📅 First version: {versions.FirstOrDefault() ?? "N/A"}");
+
+                        // Get package metadata
+                        var metadataUrl = $"https://api.nuget.org/v3/registration5-semver1/{library.ToLower()}/index.json";
+                        var metadataResponse = await httpClient.GetAsync(metadataUrl);
+                        
+                        if (metadataResponse.IsSuccessStatusCode)
+                        {
+                            var metadataContent = await metadataResponse.Content.ReadAsStringAsync();
+                            var metadata = JsonSerializer.Deserialize<JsonElement>(metadataContent);
+                            
+                            // Extract some basic info
+                            if (metadata.TryGetProperty("items", out var items) && items.GetArrayLength() > 0)
+                            {
+                                var firstItem = items[0];
+                                if (firstItem.TryGetProperty("items", out var packageItems) && packageItems.GetArrayLength() > 0)
+                                {
+                                    var latestPackage = packageItems[packageItems.GetArrayLength() - 1];
+                                    if (latestPackage.TryGetProperty("catalogEntry", out var catalogEntry))
+                                    {
+                                        if (catalogEntry.TryGetProperty("description", out var desc))
+                                        {
+                                            Console.WriteLine($"📝 Description: {desc.GetString()}");
+                                        }
+                                        if (catalogEntry.TryGetProperty("authors", out var authors))
+                                        {
+                                            Console.WriteLine($"👤 Authors: {authors.GetString()}");
+                                        }
+                                        if (catalogEntry.TryGetProperty("licenseExpression", out var license))
+                                        {
+                                            Console.WriteLine($"⚖️  License: {license.GetString()}");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"❌ Package not found on NuGet (status: {response.StatusCode})");
+                    }
+
+                    Console.WriteLine();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ Error analyzing {library}: {ex.Message}");
+                    Console.WriteLine();
+                }
+            }
+
+            Console.WriteLine("✅ Library analysis completed!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error running library analysis: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Main entry point for command line interface (like Python main function)
     /// </summary>
     public static async Task Main(string[] args)
@@ -804,6 +898,7 @@ public static class Run
             Console.WriteLine("  dotnet run batch [--daemon] tool1 'args1' tool2 'args2' # Run multiple tools");
             Console.WriteLine("  dotnet run install_dependencies                         # Install tool dependencies");
             Console.WriteLine("  dotnet run install_dependencies tool1 tool2 ...         # Install dependencies for specific tools");
+            Console.WriteLine("  dotnet run analyze_libs <lib1> [lib2] ...               # Analyze .NET libraries");
             Console.WriteLine("");
             Console.WriteLine("Daemon mode:");
             Console.WriteLine("  --daemon                                                              # Keep process running (Ctrl+C to stop)");
@@ -814,6 +909,7 @@ public static class Run
             Console.WriteLine("  dotnet run run lng_get_tools_info");
             Console.WriteLine("  dotnet run batch lng_math_calculator '{\"expression\":\"2+3\"}' lng_get_tools_info");
             Console.WriteLine("  dotnet run install_dependencies lng_email_client");
+            Console.WriteLine("  dotnet run analyze_libs Newtonsoft.Json System.Text.Json");
             Console.WriteLine("");
             Console.WriteLine("📋 Quick tool list:");
             foreach (var tool in _toolDefinitions)
@@ -853,9 +949,20 @@ public static class Run
                 await HandleBatchCommand(args[1..]);
                 break;
 
+            case "analyze_libs":
+                if (args.Length < 2)
+                {
+                    Console.WriteLine("❌ At least one library name required for analyze_libs command");
+                    Console.WriteLine("💡 Usage: dotnet run analyze_libs <lib1> [lib2] ...");
+                    Console.WriteLine("💡 Example: dotnet run analyze_libs Newtonsoft.Json System.Text.Json");
+                    return;
+                }
+                await AnalyzeLibraries(args[1..]);
+                break;
+
             default:
                 Console.WriteLine($"❌ Unknown command: {command}");
-                Console.WriteLine("Available commands: list, schema, run, batch, install_dependencies");
+                Console.WriteLine("Available commands: list, schema, run, batch, install_dependencies, analyze_libs");
                 break;
         }
     }
