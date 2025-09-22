@@ -1,0 +1,2 @@
+- You sould use `.net` environment from `./.dotnet/*`
+- To run/build project use `./.dotnet/dotnet.exe`

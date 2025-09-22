@@ -1,0 +1,4 @@
+- If you are asked to evaluate a decision before committing and understand what is a production file and what is scaffolding, do the following.
+- Let's look at all the files that have changed and decide which ones I can delete (don't delete them yourself, I'll do it) because they will be needed in the future.
+- If a file is partially needed, you can suggest moving it to the `stuff` folder next to the implementation.
+- In this case, you also need to make sure that it works well in its new location, give it a normal name, and add a small mention to the `readme.md` file in the `stuff` folder.

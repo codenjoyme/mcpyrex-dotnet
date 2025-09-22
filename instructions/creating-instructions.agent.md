@@ -1,0 +1,13 @@
+- All instructions are placed in `./.mcp-dotnet/instructions/` folder with `.agent.md` extension
+- Use bullet points format, avoid headers and sections - keep it simple and actionable
+- Write short, concise statements - minimize words, maximize usefulness
+- Each point should be specific and actionable, not explanatory
+- Add new instruction reference to `main.agent.md` with one-line description of what it covers
+- Use backticks for code examples, file paths, and commands
+- Include practical examples when necessary, but keep them minimal
+- Structure: bullet points with sub-bullets using `+` when needed
+- Avoid long explanations - focus on what to do, not why
+- Look at existing files like `activate-virtualenv.agent.md`, `choose-library.agent.md` for style reference
+- Use English for instruction content, respond in user's language
+- Test practical examples before including them
+- Keep file focused on one topic or workflow

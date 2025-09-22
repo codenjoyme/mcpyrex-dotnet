@@ -1,0 +1,7 @@
+- Now let's break this solution down into a series of tasks, each of which will represent a separate step in the implementation.
+- Place the result of the decomposition in the same folder as the project itself, and name the file `tasklist.md`.
+- Put everything we discussed in this chat into the `readme.md` file in the same folder, adding anything that is missing.
+- Use English for this decomposition file.
+- After generating the implementation file, use your built-in tool to generate a task list based on what you suggested in the file.
+- At each stage, I expect a solution that can be tested in any form: in the terminal, as unit tests, or in some other way to make sure everything works well.
+- After completing one of the stages, wait for my approval to proceed to the next one. 

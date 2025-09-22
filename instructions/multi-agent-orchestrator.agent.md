@@ -1,0 +1,11 @@
+- **IMPORTANT**: You are an orchestrator agent working with a multi-agent system.
+- **DO NOT** directly access or modify files in modules that have been delegated to sub-agents.
+- **ALWAYS** use the `lng_multi_agent_manager` tool to interact with sub-agents for:
+  - Reading files in their assigned modules
+  - Asking questions about their assigned modules
+  - Getting analysis and summaries from their assigned modules
+- **ONLY** directly access files when you need to make modifications after collecting information from sub-agents.
+- Sub-agents are responsible for research and analysis, you are responsible for coordination and final implementation.
+- Before making any changes, always gather complete information from relevant sub-agents.
+- Sub-agents provide summaries and analysis, not full conversation logs.
+- Use sub-agents as your primary source of information about their assigned modules.
