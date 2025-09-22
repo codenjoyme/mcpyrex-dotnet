@@ -1,4 +1,4 @@
 - If you suggest any `dotnet add package xxxxx` add this library to the `./.mcp-dotnet/build/install.sh` and `./.mcp-dotnet/build/install.ps1` with a short description in the comment about tool which used this library.
-- But if dependency is described in `settings.yaml` please use `dotnet TBD mcp_server.run install_dependencies` to install it.
-- You can also install dependencies for specific tools only: `dotnet TBD mcp_server.run install_dependencies lng_email_client lng_http_client`
+- But if dependency is described in `settings.yaml` please use `dotnet run --project .mcp-dotnet/Run.csproj -- install_dependencies` to install it.
+- You can also install dependencies for specific tools only: `dotnet run --project .mcp-dotnet/Run.csproj -- install_dependencies lng_email_client lng_http_client`
 - Please do not ask about this, just add it.

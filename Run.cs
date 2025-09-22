@@ -22,6 +22,16 @@ public static class Run
     private static readonly List<ToolDefinition> _toolDefinitions = new();
 
     /// <summary>
+    /// Settings from YAML file (local version for Run.cs)
+    /// </summary>
+    public class ToolSettings
+    {
+        public bool Enabled { get; set; } = true;
+        public string Description { get; set; } = "";
+        public List<string> Dependencies { get; set; } = new();
+    }
+
+    /// <summary>
     /// Tool definition structure (matching Python version)
     /// </summary>
     public class ToolDefinition
@@ -529,32 +539,50 @@ public static class Run
                 }
 
                 // Check for settings.yaml and get tool info
-                var (isDisabled, description) = ToolRegistry.IsToolDisabled(item);
+                var isDisabled = false;
+                var description = $"Tool: {currentName}";
                 var toolDependencies = new List<string>();
 
-                // Look for settings.yaml for dependencies
+                // Look for settings.yaml for dependencies and enabled status
                 var settingsFile = Path.Combine(item.FullName, "settings.yaml");
                 if (File.Exists(settingsFile))
                 {
                     try
                     {
                         var yamlContent = File.ReadAllText(settingsFile);
-                        var deserializer = new DeserializerBuilder().Build();
-                        var settings = deserializer.Deserialize<ToolRegistry.ToolSettings>(yamlContent);
+                        var deserializer = new DeserializerBuilder()
+                            .WithNamingConvention(YamlDotNet.Serialization.NamingConventions.CamelCaseNamingConvention.Instance)
+                            .Build();
+                        var settings = deserializer.Deserialize<ToolSettings>(yamlContent);
 
-                        if (settings?.Dependencies != null)
+                        if (settings != null)
                         {
-                            toolDependencies.AddRange(settings.Dependencies);
-                        }
+                            isDisabled = !settings.Enabled;
+                            
+                            if (settings.Dependencies != null)
+                            {
+                                toolDependencies.AddRange(settings.Dependencies);
+                            }
 
-                        if (!string.IsNullOrEmpty(settings?.Description))
-                        {
-                            description = settings.Description;
+                            if (!string.IsNullOrEmpty(settings.Description))
+                            {
+                                description = settings.Description;
+                            }
                         }
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine($"⚠️  Warning: Could not read {settingsFile}: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    // Fallback to ToolRegistry if no settings.yaml
+                    var (registryDisabled, registryDesc) = ToolRegistry.IsToolDisabled(item);
+                    isDisabled = registryDisabled;
+                    if (!string.IsNullOrEmpty(registryDesc))
+                    {
+                        description = registryDesc;
                     }
                 }
 
