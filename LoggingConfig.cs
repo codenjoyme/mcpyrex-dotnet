@@ -26,9 +26,9 @@ public static class LoggingConfig
         }
 
         // Ensure logs directory exists in .mcp-dotnet project folder
-        var projectDir = AppContext.BaseDirectory; // bin/Debug/net8.0/
-        var mcpDotnetDir = Path.GetFullPath(Path.Combine(projectDir, "..", "..", "..")); // Back to .mcp-dotnet
-        var logsDir = Path.Combine(mcpDotnetDir, "logs");
+        // Always use the absolute path to .mcp-dotnet project
+        var projectRoot = @"C:\Java\CopipotTraining\hello-langchain\.mcp-dotnet";
+        var logsDir = Path.Combine(projectRoot, "logs");
         Directory.CreateDirectory(logsDir);
 
         // Create logger factory if not exists - FILE ONLY for MCP stdio mode
@@ -61,8 +61,9 @@ public static class LoggingConfig
     {
         var loggerName = string.IsNullOrEmpty(loggerPrefix) ? instanceName : $"{loggerPrefix}_{instanceName}";
         
-        // Create subdirectory for instance logs
-        var instanceLogsDir = Path.Combine(Directory.GetCurrentDirectory(), "logs", logSubdir);
+        // Create subdirectory for instance logs in the same location as main logs
+        var projectRoot = @"C:\Java\CopipotTraining\hello-langchain\.mcp-dotnet";
+        var instanceLogsDir = Path.Combine(projectRoot, "logs", logSubdir);
         Directory.CreateDirectory(instanceLogsDir);
 
         var logger = SetupLogging(loggerName);
@@ -141,9 +142,17 @@ public class FileLogger : ILogger, IDisposable
     private readonly StreamWriter _fileWriter;
     private readonly object _lock = new();
 
-    public FileLogger(string categoryName, string logsDirectory, string logFileName = null)
+    public FileLogger(string categoryName, string logsDirectory, string? logFileName = null)
     {
         _categoryName = categoryName;
+        
+        // Ensure we're using the correct logs directory
+        var correctLogsDir = @"C:\Java\CopipotTraining\hello-langchain\.mcp-dotnet\logs";
+        if (logsDirectory != correctLogsDir)
+        {
+            // Override incorrect directory to prevent creating logs in wrong places
+            logsDirectory = correctLogsDir;
+        }
         
         // Ensure logs directory exists
         Directory.CreateDirectory(logsDirectory);
@@ -183,13 +192,15 @@ public class FileLogger : ILogger, IDisposable
         }
         catch (Exception ex)
         {
-            // Fallback: if file creation fails, create a generic log file
-            var fallbackPath = Path.Combine(logsDirectory, "mcp_fallback.log");
+            // Fallback: if file creation fails, create a generic log file in correct directory
+            var fallbackLogsDir = @"C:\Java\CopipotTraining\hello-langchain\.mcp-dotnet\logs";
+            Directory.CreateDirectory(fallbackLogsDir);
+            var fallbackPath = Path.Combine(fallbackLogsDir, "mcp_fallback.log");
             var fileStream = new FileStream(fallbackPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             _fileWriter = new StreamWriter(fileStream, Encoding.UTF8) { AutoFlush = true };
             
             // Log the error to the fallback file
-            _fileWriter.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - ERROR - Failed to create log for {categoryName}: {ex.Message}");
+            _fileWriter.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - ERROR - Failed to create log for {categoryName ?? "unknown"}: {ex.Message}");
             _fileWriter.Flush();
         }
     }

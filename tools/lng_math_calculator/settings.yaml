@@ -1,0 +1,3 @@
+enabled: true
+description: "Mathematical calculator tool with support for complex expressions and functions"
+dependencies: []
