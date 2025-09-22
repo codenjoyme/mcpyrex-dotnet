@@ -1,0 +1,19 @@
+# Build artifacts
+bin/
+obj/
+
+# Downloaded installer scripts  
+build/dotnet-install.ps1
+build/dotnet-install.sh
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# NuGet packages (if using packages folder)
+packages/
+
+# Logs directory (will be created at runtime)
+logs/
