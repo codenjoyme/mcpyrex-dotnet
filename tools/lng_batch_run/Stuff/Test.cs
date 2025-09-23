@@ -11,81 +11,98 @@ namespace lng_batch_run.Stuff
 {
     public class Test
     {
-        private readonly McpDotnet.Tools.LngBatchRun.Tool _tool;
-        private readonly ILogger<McpDotnet.Tools.LngBatchRun.Tool> _logger;
-
-        public Test()
+        // Mock tool runner that simulates lng_count_words and lng_math_calculator
+        private async Task<object> MockToolRunner(string toolName, Dictionary<string, object> args)
         {
-            // Create a mock logger
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            _logger = loggerFactory.CreateLogger<McpDotnet.Tools.LngBatchRun.Tool>();
-
-            // Create a mock tool runner that simulates lng_count_words and lng_math_calculator
-            Func<string, Dictionary<string, object>, Task<object>> toolRunner = async (toolName, args) =>
+            if (toolName == "lng_count_words" && args.ContainsKey("input_text"))
             {
-                if (toolName == "lng_count_words" && args.ContainsKey("input_text"))
+                var inputText = args["input_text"].ToString();
+                var wordCount = inputText?.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length ?? 0;
+                return new Dictionary<string, object>
                 {
-                    var inputText = args["input_text"].ToString();
-                    var wordCount = inputText?.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length ?? 0;
+                    ["wordCount"] = wordCount,
+                    ["success"] = true
+                };
+            }
+            
+            if (toolName == "lng_math_calculator" && args.ContainsKey("expression"))
+            {
+                var expression = args["expression"].ToString();
+                // Simple calculator - just parse numbers and return them
+                if (double.TryParse(expression, out var number))
+                {
                     return new Dictionary<string, object>
                     {
-                        ["wordCount"] = wordCount,
+                        ["result"] = number,
                         ["success"] = true
                     };
                 }
-                
-                if (toolName == "lng_math_calculator" && args.ContainsKey("expression"))
+                // Handle simple operations
+                if (expression?.Contains("+") == true)
                 {
-                    var expression = args["expression"].ToString();
-                    // Simple calculator - just parse numbers and return them
-                    if (double.TryParse(expression, out var number))
+                    var parts = expression.Split('+');
+                    if (parts.Length == 2 && double.TryParse(parts[0].Trim(), out var a) && double.TryParse(parts[1].Trim(), out var b))
                     {
                         return new Dictionary<string, object>
                         {
-                            ["result"] = number,
+                            ["result"] = a + b,
                             ["success"] = true
                         };
                     }
-                    // Handle simple operations
-                    if (expression?.Contains("+") == true)
-                    {
-                        var parts = expression.Split('+');
-                        if (parts.Length == 2 && double.TryParse(parts[0].Trim(), out var a) && double.TryParse(parts[1].Trim(), out var b))
-                        {
-                            return new Dictionary<string, object>
-                            {
-                                ["result"] = a + b,
-                                ["success"] = true
-                            };
-                        }
-                    }
-                    return new Dictionary<string, object>
-                    {
-                        ["result"] = 0,
-                        ["success"] = true
-                    };
                 }
-                
-                return new Dictionary<string, object> { ["success"] = false, ["error"] = "Tool not found" };
-            };
-
-            _tool = new McpDotnet.Tools.LngBatchRun.Tool(toolRunner, _logger);
+                return new Dictionary<string, object>
+                {
+                    ["result"] = 0,
+                    ["success"] = true
+                };
+            }
+            
+            return new Dictionary<string, object> { ["success"] = false, ["error"] = "Tool not found" };
         }
 
         private async Task<Dictionary<string, object>> ExecutePipeline(Dictionary<string, object> config)
         {
             try
             {
-                // Pass the config directly as pipeline parameter (как нужно для .NET версии)
-                var toolArgs = new Dictionary<string, object>();
-                
-                // Add each key from config to toolArgs
-                foreach (var kvp in config)
+                // Extract parameters from config
+                List<Dictionary<string, object>>? pipeline = null;
+                string? finalResult = null;
+                string? pipelineFile = null;
+                Dictionary<string, object>? userParams = null;
+                List<string>? contextFields = null;
+
+                if (config.ContainsKey("pipeline"))
                 {
-                    toolArgs[kvp.Key] = kvp.Value;
+                    pipeline = config["pipeline"] as List<Dictionary<string, object>>;
                 }
-                
-                var resultString = await _tool.RunToolAsync("lng_batch_run", toolArgs);
+
+                if (config.ContainsKey("final_result"))
+                {
+                    finalResult = config["final_result"]?.ToString();
+                }
+
+                if (config.ContainsKey("pipeline_file"))
+                {
+                    pipelineFile = config["pipeline_file"]?.ToString();
+                }
+
+                if (config.ContainsKey("user_params"))
+                {
+                    userParams = config["user_params"] as Dictionary<string, object>;
+                }
+
+                if (config.ContainsKey("context_fields"))
+                {
+                    contextFields = config["context_fields"] as List<string>;
+                }
+
+                // Call the static method directly
+                var resultString = await McpDotnet.Tools.LngBatchRun.Tool.lng_batch_run(
+                    pipeline, 
+                    finalResult, 
+                    pipelineFile, 
+                    userParams, 
+                    contextFields);
                 
                 // Parse the result string back to dictionary for assertions
                 var result = JsonSerializer.Deserialize<Dictionary<string, object>>(resultString);
@@ -685,7 +702,7 @@ namespace lng_batch_run.Stuff
             var result = await ExecutePipeline(pipelineConfig);
             
             // then
-            AssertFailedPipeline(result, "tool not found", "Loop with invalid tool should fail");
+            AssertFailedPipeline(result, "not found", "Loop with invalid tool should fail");
         }
 
         [Fact]

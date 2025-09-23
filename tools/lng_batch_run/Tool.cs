@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using McpDotnet.Pipeline;
@@ -162,7 +163,10 @@ Returns detailed error information with context when steps fail.")]
                         }
                         
                         var json = await File.ReadAllTextAsync(pipelineFile);
-                        var pipelineConfig = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+                        var pipelineConfig = JsonSerializer.Deserialize<Dictionary<string, object>>(json, new JsonSerializerOptions
+                        {
+                            Converters = { new McpDotnet.Common.ObjectConverter() }
+                        });
                         
                         // Merge file config with arguments, giving priority to direct arguments
                         mergedArguments = new Dictionary<string, object>(pipelineConfig ?? new Dictionary<string, object>());

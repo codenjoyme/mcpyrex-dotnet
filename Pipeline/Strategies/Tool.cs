@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -246,7 +247,30 @@ namespace McpDotnet.Pipeline.Strategies
 
         private object ParseToolResult(object toolResult)
         {
-            /// Parse and store result - extract and parse JSON from TextContent
+            /// Parse and store result - extract and parse JSON from TextContent or direct string
+            
+            // Handle direct string result (from .NET tools)
+            if (toolResult is string stringResult)
+            {
+                // Try to parse as JSON, but if it fails, keep as text
+                try
+                {
+                    var parsedResult = JsonSerializer.Deserialize<object>(stringResult, new JsonSerializerOptions
+                    {
+                        Converters = { new McpDotnet.Common.ObjectConverter() }
+                    });
+                    Logger.LogDebug("Successfully parsed direct string result as JSON");
+                    return parsedResult!;
+                }
+                catch (JsonException)
+                {
+                    // Not JSON - keep as plain text (useful for CSV, HTML, etc.)
+                    Logger.LogDebug("Direct string result kept as plain text (not JSON)");
+                    return stringResult;
+                }
+            }
+            
+            // Handle List<object> result (from MCP TextContent)
             if (toolResult is List<object> list && list.Count > 0)
             {
                 var firstResult = list[0];
@@ -259,7 +283,10 @@ namespace McpDotnet.Pipeline.Strategies
                     // Try to parse as JSON, but if it fails, keep as text
                     try
                     {
-                        var parsedResult = JsonSerializer.Deserialize<object>(textContent);
+                        var parsedResult = JsonSerializer.Deserialize<object>(textContent, new JsonSerializerOptions
+                        {
+                            Converters = { new McpDotnet.Common.ObjectConverter() }
+                        });
                         Logger.LogDebug("Successfully parsed tool result as JSON");
                         return parsedResult!;
                     }
