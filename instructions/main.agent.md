@@ -1,15 +1,14 @@
-- All the insturctions are placed in `./mcp_server/instructions/` folder. If you are asked to create another one - please add it in this folder as new file, and add one line to this file describing what this file is about.
+- All the insturctions are placed in `./.mcp-dotnet/instructions/` folder. If you are asked to create another one - please add it in this folder as new file, and add one line to this file describing what this file is about.
 - Follow `./multi-agent-orchestrator.agent.md` when working in a multi-agent environment with delegated sub-agents.
 - Follow `./cleanup-before-commit.agent.md` when you are asked to evaluate a decision before committing and understand what is a production file and what is scaffolding, do the following.
 - Follow `./tool-requirements-gathering.agent.md` when you need to gather requirements before creating a tool.
 - Follow `./assign-issue-to-coding-agent.agent.md` when I asked to create issue on Github an to assign it to the Coding Agent.
-- Follow `../projects/super-empath/super-empath-bot.agent.md` for starting and managing the Super Empath Telegram bot with config file.
 - Always follow `./activate-virtualenv.agent.md` in any case activate the virtual environment before starting any python stuff in terminal.
 - Important! Use MCP calls to demonstrate the operation of tools whenever possible, unless otherwise specified or if the tool is being debugged prior to its final demonstration.
 - Follow `./check-mcp-enabled.agent.md` if there is no MCP enabled or you need to check if MCP is enabled.
 - Follow `./restart-mcp-server.agent.md` if you need to restart MCP server after some changes.
 - Follow `./choose-library.agent.md` when you need to choose a library for Python.
-- Follow `./update-install.agent.md` if you suggest any `pip install xxxx`.
+- Follow `./install-library.agent.md` if you suggest any `dotnet add package xxxx` for library/dependency installation.
 - Follow `./git-repo.agent.md` if you need to work with git repository.
 - Follow `./read-debug-info.agent.md` when there are some problems.
 - Follow `./testing-tool.agent.md` if you need to test the tool after creation or modification. What json escaping quotes strategy you should use is also described in the file.
@@ -18,5 +17,5 @@
 - Follow `./creating-unit-tests.agent.md` when you need to create/run unit tests for the tool.
 - Follow `./creating-instructions.agent.md` when you need to create new instruction files for the project.
 - Follow `./creating-demo-files.agent.md` when you need to create new demo files following the standard structure and format.
-- Follow demo instructions with a pattern `**/*.demo.agent.md` to find all cases around tools (`./mcp_server/` folder) when you are asked to show a demonstration (with wording: `demo`, `демо`, `демка` and so on) of existing cases. **Important** Don't look for other files to search for demo cases.
+- Follow demo instructions with a pattern `**/*.demo.agent.md` to find all cases around tools (`./.mcp-dotnet/` folder) when you are asked to show a demonstration (with wording: `demo`, `демо`, `демка` and so on) of existing cases. **Important** Don't look for other files to search for demo cases.
 - Use `lng_email_client` tool for all email-related tasks including SMTP, API services (SendGrid, Mailgun), templates, batch sending, and email validation.

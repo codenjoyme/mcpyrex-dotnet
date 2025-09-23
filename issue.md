@@ -343,7 +343,7 @@ For VS Code MCP integration:
     "langchain-mcp-dotnet": {
       "type": "stdio",
       "command": "dotnet",
-      "args": ["run", "--project", "{workspaceFolder}/.mcp-dotnet"]
+      "args": ["run", "--project", "{workspaceFolder}/.mcp-dotnet/mcp.csproj"]
     }
   }
 }

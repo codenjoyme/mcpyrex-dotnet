@@ -69,6 +69,12 @@ Invoke-Echo "dotnet add package Microsoft.Extensions.Logging --version 8.0.0"
 Invoke-Echo "dotnet add package Microsoft.Extensions.Logging.Console --version 8.0.0"
 Invoke-Echo "dotnet add package Microsoft.Extensions.Hosting --version 8.0.0"
 
+# Core framework libraries used by multiple tools
+Invoke-Echo "dotnet add package Jint --version 4.4.1"  # JavaScript engine for expression evaluation in pipeline system
+Invoke-Echo "dotnet add package xunit --version 2.9.3"  # Unit testing framework for tool tests
+Invoke-Echo "dotnet add package xunit.runner.visualstudio --version 3.1.4"  # Test runner for xunit
+Invoke-Echo "dotnet add package Microsoft.NET.Test.Sdk --version 17.14.1"  # .NET test SDK for running tests
+
 # Verify installation
 Invoke-Echo "dotnet restore"
 Invoke-Echo "dotnet build"

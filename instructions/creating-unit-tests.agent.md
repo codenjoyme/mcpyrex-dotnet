@@ -70,5 +70,8 @@ public void shouldBuildTable_whenTwoLists_caseReplaceQuotes() {
   + If there was a change in the tested functionality, run all tests to make sure nothing is broken.
   + After that, you can take the next task from the list. 
 - Run all tests to make sure everything works correctly: 
-  + `TBD` run all tests for the tool
-  + `TBD` run single test
+  + `dotnet test Run.csproj --verbosity minimal` run all tests for the tool
+  + `dotnet test Run.csproj --filter "FullyQualifiedName~GetToolInfo_ReturnsCorrectInformation" --verbosity normal` run single test
+  + `dotnet test Run.csproj --filter "Name~GetToolInfo" --verbosity normal` run single test for short name
+  + `dotnet test Run.csproj --filter "ClassName~Tests" --verbosity normal` run tests by class name
+  + `dotnet test Run.csproj --list-tests` list all tests

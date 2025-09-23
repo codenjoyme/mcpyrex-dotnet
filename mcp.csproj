@@ -10,11 +10,21 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.1.0" />
+    <PackageReference Include="Jint" Version="4.4.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
     <PackageReference Include="ModelContextProtocol" Version="0.3.0-preview.4" />
     <PackageReference Include="YamlDotNet" Version="15.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="**\*Test.cs" />
+    <Compile Remove="**\Test\*.cs" />
+    <Compile Remove="**\Tests\*.cs" />
+    <Compile Remove="**\Stuff\Test.cs" />
+    <Compile Remove="**\Stuff\*Test*.cs" />
+    <Compile Remove="Run.cs" />
   </ItemGroup>
 
 </Project>

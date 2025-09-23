@@ -64,6 +64,12 @@ eval_echo "dotnet add package YamlDotNet --version 15.1.2"
 eval_echo "dotnet add package Microsoft.Extensions.Logging --version 8.0.0"
 eval_echo "dotnet add package Microsoft.Extensions.Logging.Console --version 8.0.0"
 
+# Core framework libraries used by multiple tools
+eval_echo "dotnet add package Jint --version 4.4.1"  # JavaScript engine for expression evaluation in pipeline system
+eval_echo "dotnet add package xunit --version 2.9.3"  # Unit testing framework for tool tests
+eval_echo "dotnet add package xunit.runner.visualstudio --version 3.1.4"  # Test runner for xunit
+eval_echo "dotnet add package Microsoft.NET.Test.Sdk --version 17.14.1"  # .NET test SDK for running tests
+
 # verify installation
 eval_echo "dotnet restore"
 eval_echo "dotnet build"
