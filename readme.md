@@ -1,18 +1,116 @@
-# MCP .NET Implementation
+# Extending GitHub Copilot with .Net via MCP
 
-.NET port of the Model Context Protocol (MCP) server with pipeline architecture and tools.
+This project demonstrates how to extend `GitHub Copilot` capabilities using `.Net` and the `Model Context Protocol (MCP)`, allowing for more deterministic and powerful interactions with the LLM.
+
+## Project Overview
+
+As a `GitHub Copilot` trainer, I've observed its impressive evolution. However, I've always wanted to access GitHub Copilot's internals to build more complex transformation chains. This project shows how to achieve that goal by leveraging MCP (Model Context Protocol) and Langchain.
+
+While `GitHub Copilot` [repository custom instructions](https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot) feature improved customization options, the introduction of the [MCP protocol](https://docs.github.com/en/copilot/using-github-copilot/coding-agent/extending-copilot-coding-agent-with-mcp) opened new possibilities for extending Copilot's functionality through custom `MCP` servers.
+
+## The Problem
+
+Instruction files are not always deterministic - they need to be fine-tuned when new LLM versions are released to reduce hallucinations. LLMs often struggle with precise text manipulations, sometimes creatively reinterpreting tasks and adding unwanted artifacts. What we need is a way to inject deterministic logic into our instructions.
+
+## The Solution
+
+This project demonstrates a solution through:
+
+1. `.Net` scripts installed on the local machine.
+2. Custom `MCP` server configuration through `../.vscode/mcp.json`
+3. Custom tools defined in the `./tools` directory
+
+With this setup, `GitHub Copilot` gains access to new, well-documented tools that it can see as part of your project. When you ask Copilot to "create a tool that does X", it can generate a solution very close to what you need. You simply accept its changes and restart MCP to get a new deterministic tool for your specific logic.
+
+## Data Security
+
+⚠️ **Important**: Please review the [Security Disclaimer](security-disclaimer.md) before using this tool in production environments.
+
+This document outlines potential data leak scenarios and provides guidance on risk mitigation when working with this tool. 
+
+- **Install file** `./build/install.sh`: 
+  - Setup this extension inside project
+  - Setup `.Net` 
+  - Setup libraties
+
+- **mcp.json**
+  ```json
+    {
+      "servers": {
+        "mcpyrex-dotnet": {
+            "type": "stdio", 
+            "command": "${workspaceFolder}\\.dotnet\\dotnet.exe",
+            "args": ["run", "--project", "${workspaceFolder}\\.mcp-dotnet\\mcp.csproj"]
+        },
+      }
+    }
+  ```
+
+- **Custom Tools**:
+  - `lng_batch_run` - advanced pipeline execution with conditionals, loops, and parallel processing
+  - `lng_count_words` - word counting, demonstrates python function calling
+  - `lng_get_tools_info` - tools information retrieval, collects all the information about tools in one place, that helps in `Github Copilot`.
+  - And more in `./tools/`
+
+## Getting Started
+
+1. Run this command in the root folder of your project and follow instructions, then it will:
+```bash
+TBD
+```
+2. Checkout extension inside `${workspaceFolder}/.mcp-dotnet` folder.
+3. Copy your environment variables in a `${workspaceFolder}/.mcp-dotnet/.env` file.
+3. Install dotnet inside `${workspaceFolder}/.dotnet` folder.
+4. Copy `${workspaceFolder}/.vscode/mcp.json` with your new MCP servers and `${workspaceFolder}/.cursor/mcp.json` in case Cursor.
+5. Copy `${workspaceFolder}/.vscode/settings.json` with your VS Code workspace settings.
+6. Copy `${workspaceFolder}/.github/copilot-instructions.md` with basic instructions.
+7. After that please start using the enhanced `GitHub Copilot` capabilities
+
+## MCP Configuration
+
+### Enabling/Disabling MCP in VS Code
+
+To control whether MCP (Model Context Protocol) is enabled or disabled, you need to modify the `${workspaceFolder}/.vscode/settings.json` file:
+
+#### To Enable MCP:
+```json
+{
+    "chat.mcp.enabled": true,
+    "github.copilot.chat.codeGeneration.useInstructionFiles": false
+}
+```
+
+#### To Disable MCP:
+```json
+{
+    "chat.mcp.enabled": false,
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true
+}
+```
+
+## API Keys
+
+API keys and other credentials should be stored in a `${workspaceFolder}/.mcp-dotnet/.env` file (not included in the repository).
+
+## Original Source
+
+This project is based on concepts from the blog post: [Как расширить GithubCopilot с помощью Python и Langchain через MCP](http://www.apofig.com/2025/06/githubcopilot-python-langchain-mcp.html)
+
+## Repository
+
+The original repository is available at: [https://github.com/mcpyrex/mcpyrex-dotnet.git](https://github.com/mcpyrex/mcpyrex-dotnet.git)
 
 ## 🚀 Two Execution Modes
 
 This implementation provides two distinct ways to run the tools:
 
-1. **📡 MCP Server Mode** (`mcp.csproj`) - Full MCP protocol server for VS Code integration
+1. **📡 MCP Server Mode** (`./mcp.csproj`) - Full MCP protocol server for VS Code integration
    - Uses ModelContextProtocol 0.3.0
    - Includes Server.cs for MCP communication
    - Integrates with VS Code Copilot and other MCP clients
    - Provides protocol-compliant tool discovery and execution
 
-2. **🔧 Standalone CLI Mode** (`run.csproj`) - Direct command-line tool execution
+2. **🔧 Standalone CLI Mode** (`./run.csproj`) - Direct command-line tool execution
    - Uses ModelContextProtocol.Sdk 0.8.0
    - Excludes Server.cs (no protocol overhead)
    - Direct tool execution via Run.cs
@@ -212,68 +310,3 @@ var arguments = new Dictionary<string, object>
 
 var result = await batchTool.RunToolAsync("lng_batch_run", arguments);
 ```
-
-## Architecture Benefits
-
-### 🏗️ Strategy Pattern
-- **Modular design** - Each strategy handles specific functionality
-- **Easy extension** - Add new step types without modifying existing code
-- **Composition over inheritance** - Flexible strategy combinations
-
-### 🔄 Compatibility
-- **API compatible** with Python version
-- **Same JSON schemas** for pipeline definitions
-- **Identical behavior** for existing pipelines
-- **Migration path** from Python to .NET
-
-### ⚡ Performance
-- **Async/await** throughout for non-blocking operations
-- **Strong typing** with compile-time checks
-- **Memory efficient** with proper disposal patterns
-- **Concurrent execution** where appropriate
-
-### 🛡️ Reliability
-- **Comprehensive error handling** with detailed messages
-- **Logging integration** using Microsoft.Extensions.Logging
-- **Unit tests** for all major components
-- **Type safety** prevents many runtime errors
-
-## Integration with Python Version
-
-The .NET implementation maintains full compatibility:
-
-1. **Pipeline Definitions** - Same JSON structure and schemas
-2. **Expression Syntax** - Adapted to .NET with documented changes
-3. **Tool Interface** - Compatible parameter and result formats
-4. **Error Handling** - Same error message formats and codes
-
-This allows:
-- **Gradual migration** from Python to .NET
-- **Mixed deployments** with both versions
-- **Shared pipeline configurations** between implementations
-- **Cross-platform development** and deployment
-
-## Contributing
-
-When adding new tools or strategies:
-
-1. Follow the established patterns in existing code
-2. Add comprehensive unit tests
-3. Update documentation and examples
-4. Maintain compatibility with Python version where possible
-
-## Dependencies
-
-- **System.Text.Json** - JSON serialization
-- **Microsoft.Extensions.Logging** - Logging framework
-- **Microsoft.Extensions.DependencyInjection** - DI container
-- **System.Threading.Tasks** - Async operations
-
-## Performance Considerations
-
-- Uses async/await for I/O operations
-- Implements proper disposal patterns
-- Minimizes memory allocations in hot paths
-- Leverages .NET's JIT compilation advantages
-
-This .NET implementation provides a robust, high-performance alternative to the Python version while maintaining full compatibility and extending the platform's capabilities.

@@ -1,0 +1,13 @@
+{
+    "servers": {
+        "mcpyrex-dotnet": {
+            "type": "stdio", 
+            "command": "${workspaceFolder}\\.dotnet\\dotnet.exe",
+            "args": ["run", "--project", "${workspaceFolder}\\.mcp-dotnet\\mcp.csproj"]
+        },
+        "github": {
+            "type": "http",
+            "url": "https://api.githubcopilot.com/mcp/"
+        }
+    }
+}

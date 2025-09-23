@@ -17,3 +17,5 @@ packages/
 
 # Logs directory (will be created at runtime)
 logs/
+
+.env
