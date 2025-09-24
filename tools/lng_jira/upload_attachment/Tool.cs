@@ -212,30 +212,33 @@ public static class Tool
 
                         // Process uploaded attachments
                         var attachmentsList = (List<object>)result["attachments"];
-                        foreach (var attachment in uploadData)
+                        if (attachmentsList != null && uploadData != null)
                         {
-                            var attachmentInfo = new Dictionary<string, object?>
+                            foreach (var attachment in uploadData)
                             {
-                                ["id"] = attachment.TryGetProperty("id", out var idElement) ? idElement.GetString() : null,
-                                ["filename"] = attachment.TryGetProperty("filename", out var filenameElement) ? filenameElement.GetString() : null,
-                                ["size"] = attachment.TryGetProperty("size", out var sizeElement) ? sizeElement.GetInt64() : (long?)null,
-                                ["mime_type"] = attachment.TryGetProperty("mimeType", out var mimeElement) ? mimeElement.GetString() : null,
-                                ["created"] = attachment.TryGetProperty("created", out var createdElement) ? createdElement.GetString() : null,
-                                ["content_url"] = attachment.TryGetProperty("content", out var contentElement) ? contentElement.GetString() : null
-                            };
+                                var attachmentInfo = new Dictionary<string, object?>
+                                {
+                                    ["id"] = attachment.TryGetProperty("id", out var idElement) ? idElement.GetString() : null,
+                                    ["filename"] = attachment.TryGetProperty("filename", out var filenameElement) ? filenameElement.GetString() : null,
+                                    ["size"] = attachment.TryGetProperty("size", out var sizeElement) ? sizeElement.GetInt64() : (long?)null,
+                                    ["mime_type"] = attachment.TryGetProperty("mimeType", out var mimeElement) ? mimeElement.GetString() : null,
+                                    ["created"] = attachment.TryGetProperty("created", out var createdElement) ? createdElement.GetString() : null,
+                                    ["content_url"] = attachment.TryGetProperty("content", out var contentElement) ? contentElement.GetString() : null
+                                };
 
-                            // Get author display name
-                            if (attachment.TryGetProperty("author", out var authorElement) &&
-                                authorElement.TryGetProperty("displayName", out var displayNameElement))
-                            {
-                                attachmentInfo["author"] = displayNameElement.GetString();
-                            }
-                            else
-                            {
-                                attachmentInfo["author"] = null;
-                            }
+                                // Get author display name
+                                if (attachment.TryGetProperty("author", out var authorElement) &&
+                                    authorElement.TryGetProperty("displayName", out var displayNameElement))
+                                {
+                                    attachmentInfo["author"] = displayNameElement.GetString();
+                                }
+                                else
+                                {
+                                    attachmentInfo["author"] = null;
+                                }
 
-                            attachmentsList.Add(attachmentInfo);
+                                attachmentsList.Add(attachmentInfo);
+                            }
                         }
 
                         // Add comment if provided

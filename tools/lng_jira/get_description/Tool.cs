@@ -171,8 +171,11 @@ public static class Tool
                     {
                         // Add file save error to the ticket data (similar to Python version)
                         var dataDict = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
-                        dataDict["_file_save_error"] = fileSaveError;
-                        result["data"] = dataDict;
+                        if (dataDict != null)
+                        {
+                            dataDict["_file_save_error"] = fileSaveError;
+                            result["data"] = dataDict;
+                        }
                     }
 
                     return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
