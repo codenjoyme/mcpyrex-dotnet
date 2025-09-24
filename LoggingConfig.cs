@@ -1,7 +1,50 @@
 using Microsoft.Extensions.Logging;
 using System.Text;
+using System.Reflection;
 
 namespace McpDotnet;
+
+/// <summary>
+/// Shared utilities for MCP logging components.
+/// </summary>
+internal static class ProjectUtils
+{
+    /// <summary>
+    /// Dynamically determine the project root directory (.mcp-dotnet folder).
+    /// </summary>
+    /// <returns>Absolute path to the .mcp-dotnet directory</returns>
+    public static string GetProjectRoot()
+    {
+        // Get the directory where the current assembly is located
+        var assemblyLocation = Assembly.GetExecutingAssembly().Location;
+        var assemblyDir = Path.GetDirectoryName(assemblyLocation);
+        
+        if (string.IsNullOrEmpty(assemblyDir))
+        {
+            // Fallback: use current directory
+            assemblyDir = Directory.GetCurrentDirectory();
+        }
+
+        // Look for .mcp-dotnet directory starting from assembly location and going up
+        var currentDir = new DirectoryInfo(assemblyDir);
+        while (currentDir != null)
+        {
+            // Check if current directory is .mcp-dotnet or contains .mcp-dotnet subdirectory
+            if (currentDir.Name == ".mcp-dotnet" || 
+                Directory.Exists(Path.Combine(currentDir.FullName, ".mcp-dotnet")))
+            {
+                return currentDir.Name == ".mcp-dotnet" 
+                    ? currentDir.FullName 
+                    : Path.Combine(currentDir.FullName, ".mcp-dotnet");
+            }
+            
+            currentDir = currentDir.Parent;
+        }
+
+        // Ultimate fallback: use current directory
+        return Directory.GetCurrentDirectory();
+    }
+}
 
 /// <summary>
 /// Logging configuration for MCP server components.
@@ -26,8 +69,8 @@ public static class LoggingConfig
         }
 
         // Ensure logs directory exists in .mcp-dotnet project folder
-        // Always use the absolute path to .mcp-dotnet project
-        var projectRoot = @"C:\Java\CopipotTraining\hello-langchain\.mcp-dotnet";
+        // Dynamically determine the project root based on current assembly location
+        var projectRoot = ProjectUtils.GetProjectRoot();
         var logsDir = Path.Combine(projectRoot, "logs");
         Directory.CreateDirectory(logsDir);
 
@@ -62,7 +105,7 @@ public static class LoggingConfig
         var loggerName = string.IsNullOrEmpty(loggerPrefix) ? instanceName : $"{loggerPrefix}_{instanceName}";
         
         // Create subdirectory for instance logs in the same location as main logs
-        var projectRoot = @"C:\Java\CopipotTraining\hello-langchain\.mcp-dotnet";
+        var projectRoot = ProjectUtils.GetProjectRoot();
         var instanceLogsDir = Path.Combine(projectRoot, "logs", logSubdir);
         Directory.CreateDirectory(instanceLogsDir);
 
@@ -147,7 +190,7 @@ public class FileLogger : ILogger, IDisposable
         _categoryName = categoryName;
         
         // Ensure we're using the correct logs directory
-        var correctLogsDir = @"C:\Java\CopipotTraining\hello-langchain\.mcp-dotnet\logs";
+        var correctLogsDir = Path.Combine(ProjectUtils.GetProjectRoot(), "logs");
         if (logsDirectory != correctLogsDir)
         {
             // Override incorrect directory to prevent creating logs in wrong places
@@ -193,7 +236,7 @@ public class FileLogger : ILogger, IDisposable
         catch (Exception ex)
         {
             // Fallback: if file creation fails, create a generic log file in correct directory
-            var fallbackLogsDir = @"C:\Java\CopipotTraining\hello-langchain\.mcp-dotnet\logs";
+            var fallbackLogsDir = Path.Combine(ProjectUtils.GetProjectRoot(), "logs");
             Directory.CreateDirectory(fallbackLogsDir);
             var fallbackPath = Path.Combine(fallbackLogsDir, "mcp_fallback.log");
             var fileStream = new FileStream(fallbackPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
