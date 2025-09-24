@@ -19,4 +19,5 @@ packages/
 logs/
 
 .env
+!build/config/.env
 work
