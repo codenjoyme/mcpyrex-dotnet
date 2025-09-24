@@ -169,8 +169,11 @@ if ($ideChoice -eq "c") {
     # Copy VSCode configuration files
     Copy-ConfigFile "$CONFIG_BASE\.vscode\mcp.json" "..\..\/.vscode\mcp.json"
     Copy-ConfigFile "$CONFIG_BASE\.vscode\settings.json" "..\..\/.vscode\settings.json"  
-    Copy-ConfigFile "$CONFIG_BASE\.github\copilot-instructions.md" "..\..\/.github\copilot-instructions.md"
+    Copy-ConfigFile "$CONFIG_BASE\.github\copilot-instructions.md" "..\..\/.github\copilot-instructions.md"    
 }
+
+# Copy .env configuration file
+Copy-ConfigFile "$CONFIG_BASE\..\.env" "..\..\/.env" $workspaceRoot
 
 # Restore NuGet packages for existing projects
 Write-Color "Restoring NuGet packages..." $Yellow
@@ -179,6 +182,10 @@ Invoke-Echo "dotnet restore mcp.csproj"
 Invoke-Echo "dotnet restore run.csproj"
 
 Write-Color ".NET MCP server setup complete!" $Green
+
+Write-Host ""
+Write-Host "Happy coding!" -ForegroundColor Magenta
+Write-Host ""
 
 Write-Color "Press any key to exit..." $Yellow
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
