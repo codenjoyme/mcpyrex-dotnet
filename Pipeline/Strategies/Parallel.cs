@@ -15,8 +15,7 @@ namespace McpDotnet.Pipeline.Strategies
 
     public class ParallelStrategy : ExecutionStrategy
     {
-        private static readonly ILogger Logger = LoggerFactory.Create(builder => builder.AddConsole())
-            .CreateLogger<ParallelStrategy>();
+        private static readonly ILogger Logger = McpDotnet.LoggingConfig.SetupLogging("Pipeline.ParallelStrategy");
 
         /// <summary>
         /// Strategy for handling parallel execution of steps.

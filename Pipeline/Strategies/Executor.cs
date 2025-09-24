@@ -42,8 +42,7 @@ namespace McpDotnet.Pipeline.Strategies
     /// </summary>
     public class StrategyBasedExecutor
     {
-        private static readonly ILogger Logger = LoggerFactory.Create(builder => builder.AddConsole())
-            .CreateLogger<StrategyBasedExecutor>();
+        private static readonly ILogger Logger = McpDotnet.LoggingConfig.SetupLogging("Pipeline.StrategyBasedExecutor");
 
         private readonly Func<string, Dictionary<string, object>, Task<object>> _toolRunner;
         private readonly List<ExecutionStrategy> _strategies = new();

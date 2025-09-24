@@ -15,8 +15,7 @@ namespace McpDotnet.Pipeline.Strategies
 
     public class LoopStrategy : ExecutionStrategy
     {
-        private static readonly ILogger Logger = LoggerFactory.Create(builder => builder.AddConsole())
-            .CreateLogger<LoopStrategy>();
+        private static readonly ILogger Logger = McpDotnet.LoggingConfig.SetupLogging("Pipeline.LoopStrategy");
 
         /// <summary>
         /// Strategy for handling loop constructs (forEach, while, repeat).

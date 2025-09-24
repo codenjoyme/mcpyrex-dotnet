@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using McpDotnet;
 using McpDotnet.Pipeline;
 using McpDotnet.Pipeline.Strategies;
 using ModelContextProtocol.Server;
@@ -29,7 +30,7 @@ namespace McpDotnet.Tools.LngBatchRun
     [McpServerToolType]
     public static class Tool
     {
-
+        private static readonly ILogger Logger = LoggingConfig.SetupLogging("Tools.lng_batch_run");
 
 
         /// <summary>
@@ -137,9 +138,9 @@ Returns detailed error information with context when steps fail.")]
                 // Create strategy-based pipeline executor
                 var executor = new StrategyBasedExecutor(toolRunner);
                 
-                // Log available strategies (using Console for static context)
+                // Log available strategies
                 var strategies = executor.GetStrategies();
-                Console.WriteLine($"Available strategies: {string.Join(", ", strategies)}");
+                Logger.LogInformation("Available strategies: {Strategies}", string.Join(", ", strategies));
                 
                 Dictionary<string, object> mergedArguments;
                 // Check if pipeline_file is provided
@@ -150,7 +151,7 @@ Returns detailed error information with context when steps fail.")]
                     {
                         throw new ArgumentException("pipeline_file cannot be null or empty");
                     }
-                    Console.WriteLine($"Loading pipeline from file: {pipelineFile}");
+                    Logger.LogInformation("Loading pipeline from file: {PipelineFile}", pipelineFile);
                     
                     try
                     {
@@ -178,7 +179,7 @@ Returns detailed error information with context when steps fail.")]
                             }
                         }
                         
-                        Console.WriteLine($"Successfully loaded pipeline from {pipelineFile}");
+                        Logger.LogInformation("Successfully loaded pipeline from {PipelineFile}", pipelineFile);
                     }
                     catch (FileNotFoundException)
                     {
@@ -272,7 +273,7 @@ Returns detailed error information with context when steps fail.")]
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Unexpected error in lng_batch_run: {e}");
+                Logger.LogError(e, "Unexpected error in lng_batch_run");
                 return JsonSerializer.Serialize(new Dictionary<string, object>
                 {
                     ["success"] = false,

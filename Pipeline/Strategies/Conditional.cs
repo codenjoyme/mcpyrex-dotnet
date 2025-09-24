@@ -14,8 +14,7 @@ namespace McpDotnet.Pipeline.Strategies
 
     public class ConditionalStrategy : ExecutionStrategy
     {
-        private static readonly ILogger Logger = LoggerFactory.Create(builder => builder.AddConsole())
-            .CreateLogger<ConditionalStrategy>();
+        private static readonly ILogger Logger = McpDotnet.LoggingConfig.SetupLogging("Pipeline.ConditionalStrategy");
 
         /// <summary>
         /// Strategy for handling conditional logic (if-then-else).

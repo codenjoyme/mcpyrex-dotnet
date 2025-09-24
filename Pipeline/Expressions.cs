@@ -134,8 +134,7 @@ namespace McpDotnet.Pipeline
     /// </summary>
     public class JavaScriptExpressionStrategy : ExpressionStrategy
     {
-        private static readonly ILogger Logger = LoggerFactory.Create(builder => builder.AddConsole())
-            .CreateLogger<JavaScriptExpressionStrategy>();
+        private static readonly ILogger Logger = McpDotnet.LoggingConfig.SetupLogging("Pipeline.JavaScriptExpressionStrategy");
 
         public override bool CanHandle(string expression)
         {
@@ -235,8 +234,7 @@ namespace McpDotnet.Pipeline
     /// </summary>
     public class CSharpExpressionStrategy : ExpressionStrategy
     {
-        private static readonly ILogger Logger = LoggerFactory.Create(builder => builder.AddConsole())
-            .CreateLogger<CSharpExpressionStrategy>();
+        private static readonly ILogger Logger = McpDotnet.LoggingConfig.SetupLogging("Pipeline.CSharpExpressionStrategy");
 
         public override bool CanHandle(string expression)
         {
@@ -629,8 +627,7 @@ namespace McpDotnet.Pipeline
     /// </summary>
     public static class ExpressionEvaluator
     {
-        private static readonly ILogger Logger = LoggerFactory.Create(builder => builder.AddConsole())
-            .CreateLogger(typeof(ExpressionEvaluator));
+        private static readonly ILogger Logger = McpDotnet.LoggingConfig.SetupLogging("Pipeline.ExpressionEvaluator");
 
         // Global registry of expression strategies
         private static readonly List<ExpressionStrategy> Strategies = new()

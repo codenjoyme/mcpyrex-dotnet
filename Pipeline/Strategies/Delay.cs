@@ -14,8 +14,7 @@ namespace McpDotnet.Pipeline.Strategies
 
     public class DelayStrategy : ExecutionStrategy
     {
-        private static readonly ILogger Logger = LoggerFactory.Create(builder => builder.AddConsole())
-            .CreateLogger<DelayStrategy>();
+        private static readonly ILogger Logger = McpDotnet.LoggingConfig.SetupLogging("Pipeline.DelayStrategy");
 
         /// <summary>
         /// Strategy for handling delay/sleep operations.

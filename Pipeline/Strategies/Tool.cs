@@ -18,8 +18,7 @@ namespace McpDotnet.Pipeline.Strategies
 
     public class ToolStrategy : ExecutionStrategy
     {
-        private static readonly ILogger Logger = LoggerFactory.Create(builder => builder.AddConsole())
-            .CreateLogger<ToolStrategy>();
+        private static readonly ILogger Logger = McpDotnet.LoggingConfig.SetupLogging("Pipeline.ToolStrategy");
 
         private readonly Func<string, Dictionary<string, object>, Task<object>> _toolRunner;
 
