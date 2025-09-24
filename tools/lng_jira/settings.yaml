@@ -1,0 +1,3 @@
+enabled: true
+description: "Jira integration tools - retrieve ticket information, download attachments, and upload files to Jira tickets"
+dependencies: ["System.Net.Http", "System.Text.Json", "System.Text.RegularExpressions"]
