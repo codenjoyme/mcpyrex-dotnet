@@ -54,17 +54,54 @@ This document outlines potential data leak scenarios and provides guidance on ri
 
 ## Getting Started
 
-1. Run this command in the root folder of your project and follow instructions, then it will:
-```bash
-TBD
+1. Run this command in the root folder of your project and follow instructions:
+
+**PowerShell (Windows):**
+```powershell
+$work = ".mcp-dotnet"; $url = "https://github.com/mcpyrex/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; Invoke-WebRequest -Uri $url -OutFile "$work\project.zip"; Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
 ```
-2. Checkout extension inside `${workspaceFolder}/.mcp-dotnet` folder.
-3. Copy your environment variables in a `${workspaceFolder}/.mcp-dotnet/.env` file.
-3. Install dotnet inside `${workspaceFolder}/.dotnet` folder.
-4. Copy `${workspaceFolder}/.vscode/mcp.json` with your new MCP servers and `${workspaceFolder}/.cursor/mcp.json` in case Cursor.
-5. Copy `${workspaceFolder}/.vscode/settings.json` with your VS Code workspace settings.
-6. Copy `${workspaceFolder}/.github/copilot-instructions.md` with basic instructions.
-7. After that please start using the enhanced `GitHub Copilot` capabilities
+
+This command will:
+- Download the latest version from GitHub
+- Extract it to `./.mcp-dotnet` folder  
+- Navigate to the build directory
+- Run the interactive installation script
+
+2. The installation script will automatically:
+   - Detect or install .NET SDK 8.0
+   - Ask you to choose between Cursor or VSCode
+   - Copy appropriate configuration files
+   - Restore NuGet packages for both projects
+   - Set up your MCP server integration
+
+3. After installation:
+   - Your `.vscode/mcp.json` or `.cursor/mcp.json` will be configured
+   - Your workspace settings will be updated
+   - GitHub Copilot instructions will be in place  
+   - Start using enhanced GitHub Copilot capabilities!
+
+### Alternative Installation Methods
+
+**One-line installation (copy-paste friendly):**
+```powershell
+$work = ".mcp-dotnet"; $url = "https://github.com/mcpyrex/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; Invoke-WebRequest -Uri $url -OutFile "$work\project.zip"; Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
+```
+
+**Manual installation:**
+```powershell
+# 1. Download and extract
+git clone https://github.com/mcpyrex/mcpyrex-dotnet.git .mcp-dotnet
+cd .mcp-dotnet\build
+
+# 2. Run installation
+.\install.ps1
+```
+
+**Update existing installation:**
+```powershell
+# Navigate to existing installation and update
+cd .mcp-dotnet\build; .\install.ps1
+```
 
 ## MCP Configuration
 
