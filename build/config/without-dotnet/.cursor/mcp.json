@@ -2,8 +2,8 @@
   "mcpServers": {
     "mcpyrex-dotnet": {
         "type": "stdio",
-        "command": "{workspaceFolder}\\.dotnet\\dotnet.exe",
-        "args": ["run", "--project", "{workspaceFolder}\\.mcp-dotnet"]
+        "command": "{{workspaceFolder}}\\.dotnet\\dotnet.exe",
+        "args": ["run", "--project", "{{workspaceFolder}}\\.mcp-dotnet"]
     }
   }
 }

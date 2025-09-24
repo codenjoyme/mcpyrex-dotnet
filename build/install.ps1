@@ -67,9 +67,9 @@ function Copy-ConfigFile {
         # For JSON files, escape backslashes
         if ($TargetPath -like "*.json") {
             $escapedPath = $WorkspaceRoot -replace '\\', '\\'
-            $content = $content -replace '\{workspaceFolder\}', $escapedPath
+            $content = $content -replace '\{\{workspaceFolder\}\}', $escapedPath
         } else {
-            $content = $content -replace '\{workspaceFolder\}', $WorkspaceRoot
+            $content = $content -replace '\{\{workspaceFolder\}\}', $WorkspaceRoot
         }
     }
     
