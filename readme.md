@@ -33,6 +33,13 @@ This document outlines potential data leak scenarios and provides guidance on ri
 1. Run this command in the root folder of your project and follow instructions:
 
 **One-line installation (copy-paste friendly):**
+
+**With git**
+```powershell
+git clone https://github.com/mcpyrex/mcpyrex-dotnet.git .mcp-dotnet; cd .mcp-dotnet\build; .\install.ps1
+```
+
+**Without git**
 ```powershell
 $work = ".mcp-dotnet"; $url = "https://github.com/mcpyrex/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; Invoke-WebRequest -Uri $url -OutFile "$work\project.zip"; Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
 ```
@@ -55,16 +62,6 @@ $work = ".mcp-dotnet"; $url = "https://github.com/mcpyrex/mcpyrex-dotnet/archive
    - Your workspace settings will be updated
    - GitHub Copilot instructions will be in place  
    - Start using enhanced GitHub Copilot capabilities!
-
-**Manual installation:**
-```powershell
-# 1. Download and extract
-git clone https://github.com/mcpyrex/mcpyrex-dotnet.git .mcp-dotnet
-cd .mcp-dotnet\build
-
-# 2. Run installation
-.\install.ps1
-```
 
 **Update existing installation:**
 ```powershell
