@@ -56,16 +56,21 @@ This document outlines potential data leak scenarios and provides guidance on ri
 
 1. Run this command in the root folder of your project and follow instructions:
 
-**PowerShell (Windows):**
+**PowerShell (Windows) - One-line installation:**
 ```powershell
-$work = ".mcp-dotnet"; $url = "https://github.com/mcpyrex/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; Invoke-WebRequest -Uri $url -OutFile "$work\project.zip"; Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mcpyrex/mcpyrex-dotnet/main/build/bootstrap.ps1" -OutFile "bootstrap.ps1"; .\bootstrap.ps1; Remove-Item "bootstrap.ps1"
 ```
 
-This command will:
-- Download the latest version from GitHub
-- Extract it to `./.mcp-dotnet` folder  
-- Navigate to the build directory
-- Run the interactive installation script
+**Alternative - Direct execution without downloading:**
+```powershell
+iex (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mcpyrex/mcpyrex-dotnet/main/build/bootstrap.ps1").Content
+```
+
+This bootstrap script will:
+- Download the latest version from GitHub to `./.mcp-dotnet` folder
+- Extract all files
+- Navigate to the build directory  
+- Run the interactive installation script automatically
 
 2. The installation script will automatically:
    - Detect or install .NET SDK 8.0
