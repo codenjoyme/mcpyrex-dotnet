@@ -14,9 +14,10 @@ I have EPMXYZ-6369 ticket. Please process it.
 - Required environment variables: `JIRA_URL`, `JIRA_AUTH` (Bearer token) in `.env` file.
 - Please skip optional `.env` when using jira tools - it will be loaded automatically. Please don't copy `.env` file to other place. 
 - Everytime print link to the ticket.
+- When you are creating new tool please use one folder for it `lng_pdf_extract_image`, not `lng_pdf\extract_image`.
 
 ## Processing steps
-1. Track all these steps in your tasklist.
+1. Track all these steps in your tasklist (by using `todos` builtin tool).
 2. **Create newtool**: For now we dont have any `lng_pdf_extract_images` tool, so please create it before run main scenario. Please follow instructions to create the tool. Please also create this new tool in separate folder, not in `lng_jira` group.
 3. **Restart the MCP**: Follow the instructions on how to restart the MCP. If tool not appear as avaliable please stop and ask user to restart MCP in manual.
 4. **Get ticket info**: Use `lng_jira_get_description` to extract ticket details and identify PDF attachments.

@@ -3,7 +3,6 @@
 - Follow `./cleanup-before-commit.agent.md` when you are asked to evaluate a decision before committing and understand what is a production file and what is scaffolding, do the following.
 - Follow `./tool-requirements-gathering.agent.md` when you need to gather requirements before creating a tool.
 - Follow `./assign-issue-to-coding-agent.agent.md` when I asked to create issue on Github an to assign it to the Coding Agent.
-- Always follow `./activate-virtualenv.agent.md` in any case activate the virtual environment before starting any python stuff in terminal.
 - Important! Use MCP calls to demonstrate the operation of tools whenever possible, unless otherwise specified or if the tool is being debugged prior to its final demonstration.
 - Follow `./check-mcp-enabled.agent.md` if there is no MCP enabled or you need to check if MCP is enabled.
 - Follow `./restart-mcp-server.agent.md` if you need to restart MCP server after some changes.
@@ -19,3 +18,5 @@
 - Follow `./creating-demo-files.agent.md` when you need to create new demo files following the standard structure and format.
 - Follow demo instructions with a pattern `**/*.demo.agent.md` to find all cases around tools (`./.mcp-dotnet/` folder) when you are asked to show a demonstration (with wording: `demo`, `демо`, `демка` and so on) of existing cases. **Important** Don't look for other files to search for demo cases.
 - Use `lng_email_client` tool for all email-related tasks including SMTP, API services (SendGrid, Mailgun), templates, batch sending, and email validation.
+- Please use terminal to move file and update in new plase. Do not recreate file when you can do it with copying. 
+- Always chach that this is can be a wrong folder for this command.

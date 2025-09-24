@@ -3,4 +3,4 @@
 - Add dependencies with `dotnet add .mcp-dotnet/run.csproj package xxxxx` only for core framework (not for tools) - in this case also update `install.sh` and `install.ps1`.
 - You can also install dependencies for specific tools only: `dotnet run --project .mcp-dotnet/run.csproj -- install_dependencies lng_email_client lng_http_client`
 - Please do not ask about this, just add it.
-- Also please do the same for `.mcp-dotnet/mcp.csproj` like for `.mcp-dotnet/run.csproj`.
+- **Important** Also please do the same for `.mcp-dotnet/mcp.csproj` like for `.mcp-dotnet/run.csproj`.
