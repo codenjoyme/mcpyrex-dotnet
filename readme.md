@@ -28,49 +28,20 @@ With this setup, `GitHub Copilot` gains access to new, well-documented tools tha
 
 This document outlines potential data leak scenarios and provides guidance on risk mitigation when working with this tool. 
 
-- **Install file** `./build/install.sh`: 
-  - Setup this extension inside project
-  - Setup `.NET` 
-  - Setup libraties
-
-- **mcp.json**
-  ```json
-    {
-      "servers": {
-        "mcpyrex-dotnet": {
-            "type": "stdio", 
-            "command": "${workspaceFolder}\\.dotnet\\dotnet.exe",
-            "args": ["run", "--project", "${workspaceFolder}\\.mcp-dotnet\\mcp.csproj"]
-        },
-      }
-    }
-  ```
-
-- **Custom Tools**:
-  - `lng_batch_run` - advanced pipeline execution with conditionals, loops, and parallel processing
-  - `lng_count_words` - word counting, demonstrates python function calling
-  - `lng_get_tools_info` - tools information retrieval, collects all the information about tools in one place, that helps in `Github Copilot`.
-  - And more in `./tools/`
-
 ## Getting Started
 
 1. Run this command in the root folder of your project and follow instructions:
 
-**PowerShell (Windows) - One-line installation:**
+**One-line installation (copy-paste friendly):**
 ```powershell
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mcpyrex/mcpyrex-dotnet/main/build/bootstrap.ps1" -OutFile "bootstrap.ps1"; .\bootstrap.ps1; Remove-Item "bootstrap.ps1"
+$work = ".mcp-dotnet"; $url = "https://github.com/mcpyrex/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; Invoke-WebRequest -Uri $url -OutFile "$work\project.zip"; Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
 ```
 
-**Alternative - Direct execution without downloading:**
-```powershell
-iex (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mcpyrex/mcpyrex-dotnet/main/build/bootstrap.ps1").Content
-```
-
-This bootstrap script will:
-- Download the latest version from GitHub to `./.mcp-dotnet` folder
-- Extract all files
-- Navigate to the build directory  
-- Run the interactive installation script automatically
+1. This script will:
+   - Download the latest version from GitHub to `./.mcp-dotnet` folder
+   - Extract all files
+   - Navigate to the build directory  
+   - Run the interactive installation script automatically
 
 2. The installation script will automatically:
    - Detect or install .NET SDK 8.0
@@ -84,13 +55,6 @@ This bootstrap script will:
    - Your workspace settings will be updated
    - GitHub Copilot instructions will be in place  
    - Start using enhanced GitHub Copilot capabilities!
-
-### Alternative Installation Methods
-
-**One-line installation (copy-paste friendly):**
-```powershell
-$work = ".mcp-dotnet"; $url = "https://github.com/mcpyrex/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; Invoke-WebRequest -Uri $url -OutFile "$work\project.zip"; Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
-```
 
 **Manual installation:**
 ```powershell
@@ -130,9 +94,30 @@ To control whether MCP (Model Context Protocol) is enabled or disabled, you need
 }
 ```
 
+## mcp.json
+
+```json
+  {
+    "servers": {
+      "mcpyrex-dotnet": {
+          "type": "stdio", 
+          "command": "${workspaceFolder}\\.dotnet\\dotnet.exe",
+          "args": ["run", "--project", "${workspaceFolder}\\.mcp-dotnet\\mcp.csproj"]
+      },
+    }
+  }
+```
+
 ## API Keys
 
 API keys and other credentials should be stored in a `${workspaceFolder}/.mcp-dotnet/.env` file (not included in the repository).
+
+## Custom Tools
+
+  - `lng_batch_run` - advanced pipeline execution with conditionals, loops, and parallel processing
+  - `lng_count_words` - word counting, demonstrates python function calling
+  - `lng_get_tools_info` - tools information retrieval, collects all the information about tools in one place, that helps in `Github Copilot`.
+  - And more in `./tools/`
 
 ## Original Source
 
