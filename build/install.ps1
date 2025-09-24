@@ -20,15 +20,105 @@ function Invoke-Echo {
     Invoke-Expression $Command
 }
 
+function Get-UserChoice {
+    param([string]$Prompt, [string[]]$ValidOptions)
+    do {
+        Write-Color $Prompt $Yellow
+        $choice = Read-Host
+        $choice = $choice.ToLower()
+    } while ($ValidOptions -notcontains $choice)
+    return $choice
+}
+
+function Show-FileComparison {
+    param([string]$CurrentFile, [string]$NewFile, [string]$TargetPath)
+    
+    Write-Color "=== CURRENT FILE: $TargetPath ===" $Blue
+    if (Test-Path $CurrentFile) {
+        Get-Content $CurrentFile | Write-Host
+    } else {
+        Write-Host "(File does not exist)" -ForegroundColor Gray
+    }
+    
+    Write-Color "=== NEW FILE CONTENT ===" $Blue
+    Get-Content $NewFile | Write-Host
+    
+    $replace = Get-UserChoice "Do you want to replace the file? (y/n)" @("y", "n")
+    return $replace -eq "y"
+}
+
+function Copy-ConfigFile {
+    param([string]$SourcePath, [string]$TargetPath, [string]$WorkspaceRoot = $null)
+    
+    if (-not (Test-Path $SourcePath)) {
+        Write-Color "Warning: Source file not found: $SourcePath" $Red
+        return
+    }
+    
+    # Create target directory if it doesn't exist
+    $targetDir = Split-Path $TargetPath -Parent
+    if (-not (Test-Path $targetDir)) {
+        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+    }
+    
+    # Read and process content
+    $content = Get-Content $SourcePath -Raw
+    if ($WorkspaceRoot) {
+        # For JSON files, escape backslashes
+        if ($TargetPath -like "*.json") {
+            $escapedPath = $WorkspaceRoot -replace '\\', '\\'
+            $content = $content -replace '\{workspaceFolder\}', $escapedPath
+        } else {
+            $content = $content -replace '\{workspaceFolder\}', $WorkspaceRoot
+        }
+    }
+    
+    # Create temp file for comparison
+    $tempFile = "$env:TEMP\mcp_temp_$(Get-Random).tmp"
+    $content | Out-File -FilePath $tempFile -Encoding UTF8
+    
+    # Show comparison and ask for confirmation
+    if (Show-FileComparison $TargetPath $tempFile $TargetPath) {
+        # Backup existing file if it exists
+        if (Test-Path $TargetPath) {
+            $backupPath = "$TargetPath.bak"
+            Copy-Item $TargetPath $backupPath -Force
+            Write-Color "Created backup: $backupPath" $Yellow
+        }
+        
+        # Copy new content
+        $content | Out-File -FilePath $TargetPath -Encoding UTF8
+        Write-Color "File copied successfully: $TargetPath" $Green
+    } else {
+        Write-Color "File copy skipped: $TargetPath" $Yellow
+    }
+    
+    # Clean up temp file
+    Remove-Item $tempFile -Force -ErrorAction SilentlyContinue
+}
+
 # Check if .NET SDK is available
 Write-Color "Checking for .NET SDK..." $Yellow
 $dotnetFound = $false
-if (Get-Command dotnet -ErrorAction SilentlyContinue) {
+$useSystemDotnet = $false
+
+# First check if we have a local .NET installation
+$localDotnetPath = Resolve-Path "..\..\.dotnet" -ErrorAction SilentlyContinue
+if ($localDotnetPath -and (Test-Path "$localDotnetPath\dotnet.exe")) {
+    Write-Color "Local .NET SDK found in project directory!" $Green
+    # Add local .NET to PATH for current session
+    $env:PATH = "$localDotnetPath;$env:PATH"
+    Invoke-Echo "dotnet --version"
+    $dotnetFound = $true
+    $useSystemDotnet = $false  # Local installation = without-dotnet config
+}
+elseif (Get-Command dotnet -ErrorAction SilentlyContinue) {
     $sdks = dotnet --list-sdks 2>$null
     if ($sdks -match "8\.") {
         Write-Color ".NET SDK 8.x found in system!" $Green
         Invoke-Echo "dotnet --version"
         $dotnetFound = $true
+        $useSystemDotnet = $true  # System installation = with-dotnet config
     }
 }
 
@@ -57,26 +147,38 @@ if (-not $dotnetFound) {
 
 Invoke-Echo "dotnet --info"
 
-# Go to project root and create .NET project there
+# Determine CONFIG_BASE based on .NET SDK type
+if ($useSystemDotnet) {
+    $CONFIG_BASE = ".\config\with-dotnet"
+    Write-Color "Using configuration for systems with .NET SDK installed globally" $Green
+} else {
+    $CONFIG_BASE = ".\config\without-dotnet"
+    Write-Color "Using configuration for systems without .NET SDK (using local installation)" $Green
+}
+
+# Ask user for IDE choice
+$ideChoice = Get-UserChoice "Choose your IDE: (c)ursor or (v)scode?" @("c", "v")
+$workspaceRoot = Resolve-Path "..\..\"
+
+if ($ideChoice -eq "c") {
+    Write-Color "Configuring for Cursor..." $Green
+    # Copy mcp.json for Cursor with workspaceFolder replacement
+    Copy-ConfigFile "$CONFIG_BASE\.cursor\mcp.json" "..\..\/.cursor\mcp.json" $workspaceRoot
+} else {
+    Write-Color "Configuring for VSCode..." $Green
+    # Copy VSCode configuration files
+    Copy-ConfigFile "$CONFIG_BASE\.vscode\mcp.json" "..\..\/.vscode\mcp.json"
+    Copy-ConfigFile "$CONFIG_BASE\.vscode\settings.json" "..\..\/.vscode\settings.json"  
+    Copy-ConfigFile "$CONFIG_BASE\.github\copilot-instructions.md" "..\..\/.github\copilot-instructions.md"
+}
+
+# Restore NuGet packages for existing projects
+Write-Color "Restoring NuGet packages..." $Yellow
 Invoke-Echo "Set-Location .."
-Invoke-Echo "dotnet new console --force"
-
-# Add NuGet packages
-Invoke-Echo "dotnet add package ModelContextProtocol --prerelease"
-Invoke-Echo "dotnet add package DotNetEnv --version 3.1.0"
-Invoke-Echo "dotnet add package YamlDotNet --version 15.1.2"
-Invoke-Echo "dotnet add package Microsoft.Extensions.Logging --version 8.0.0"
-Invoke-Echo "dotnet add package Microsoft.Extensions.Logging.Console --version 8.0.0"
-Invoke-Echo "dotnet add package Microsoft.Extensions.Hosting --version 8.0.0"
-
-# Core framework libraries used by multiple tools
-Invoke-Echo "dotnet add package Jint --version 4.4.1"  # JavaScript engine for expression evaluation in pipeline system
-Invoke-Echo "dotnet add package xunit --version 2.9.3"  # Unit testing framework for tool tests
-Invoke-Echo "dotnet add package xunit.runner.visualstudio --version 3.1.4"  # Test runner for xunit
-Invoke-Echo "dotnet add package Microsoft.NET.Test.Sdk --version 17.14.1"  # .NET test SDK for running tests
-
-# Verify installation
-Invoke-Echo "dotnet restore"
-Invoke-Echo "dotnet build"
+Invoke-Echo "dotnet restore mcp.csproj"
+Invoke-Echo "dotnet restore run.csproj"
 
 Write-Color ".NET MCP server setup complete!" $Green
+
+Write-Color "Press any key to exit..." $Yellow
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

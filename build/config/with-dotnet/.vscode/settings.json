@@ -84,21 +84,7 @@
         // "iex": true,
         // "dotnet": true 
     },
-    "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 100,
-    "terminal.integrated.cwd": "${workspaceFolder}",
-    "terminal.integrated.env.windows": {
-        "DOTNET_ROOT": "${workspaceFolder}/.dotnet",
-        "PATH": "${workspaceFolder}/.dotnet;${env:PATH}"
-    },
-    "terminal.integrated.profiles.windows": {
-        "PowerShell .NET": {
-            "source": "PowerShell",
-            "args": [
-                "-NoExit",
-                "-Command", "cd '${workspaceFolder}'; $env:PATH = '${workspaceFolder}\\.dotnet;' + $env:PATH; Write-Host '.NET environment configured!' -ForegroundColor Green; Write-Host 'Using .NET from: ${workspaceFolder}\\.dotnet\\dotnet.exe' -ForegroundColor Cyan"
-            ]
-        }
-    },
-    "terminal.integrated.defaultProfile.windows": "PowerShell"
+    // "files.autoSave": "afterDelay",
+    // "files.autoSaveDelay": 100,
+    "terminal.integrated.cwd": "${workspaceFolder}"
 }
