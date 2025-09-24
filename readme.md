@@ -1,26 +1,26 @@
-# Extending GitHub Copilot with .Net via MCP
+# Extending GitHub Copilot with .NET via MCP
 
-This project demonstrates how to extend `GitHub Copilot` capabilities using `.Net` and the `Model Context Protocol (MCP)`, allowing for more deterministic and powerful interactions with the LLM.
+This project demonstrates how to extend `GitHub Copilot` capabilities using `.NET` and the `Model Context Protocol (MCP)`, allowing for more deterministic and powerful interactions with the LLM.
 
 ## Project Overview
 
-As a `GitHub Copilot` trainer, I've observed its impressive evolution. However, I've always wanted to access GitHub Copilot's internals to build more complex transformation chains. This project shows how to achieve that goal by leveraging MCP (Model Context Protocol) and Langchain.
+As a `GitHub Copilot` trainer, I've observed its impressive evolution. However, I've always wanted to access GitHub Copilot's internals to build more complex transformation chains. This project shows how to achieve that goal by leveraging `MCP` (`Model Context Protocol`) and custom MCP tools.
 
 While `GitHub Copilot` [repository custom instructions](https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot) feature improved customization options, the introduction of the [MCP protocol](https://docs.github.com/en/copilot/using-github-copilot/coding-agent/extending-copilot-coding-agent-with-mcp) opened new possibilities for extending Copilot's functionality through custom `MCP` servers.
 
 ## The Problem
 
-Instruction files are not always deterministic - they need to be fine-tuned when new LLM versions are released to reduce hallucinations. LLMs often struggle with precise text manipulations, sometimes creatively reinterpreting tasks and adding unwanted artifacts. What we need is a way to inject deterministic logic into our instructions.
+Instruction files are not always deterministic - they need to be fine-tuned when new `LLM` versions are released to reduce hallucinations. `LLM` often struggle with precise text manipulations, sometimes creatively reinterpreting tasks and adding unwanted artifacts. What we need is a way to inject deterministic logic into our instructions.
 
 ## The Solution
 
 This project demonstrates a solution through:
 
-1. `.Net` scripts installed on the local machine.
+1. `.NET` scripts installed on the local machine.
 2. Custom `MCP` server configuration through `../.vscode/mcp.json`
 3. Custom tools defined in the `./tools` directory
 
-With this setup, `GitHub Copilot` gains access to new, well-documented tools that it can see as part of your project. When you ask Copilot to "create a tool that does X", it can generate a solution very close to what you need. You simply accept its changes and restart MCP to get a new deterministic tool for your specific logic.
+With this setup, `GitHub Copilot` gains access to new, well-documented tools that it can see as part of your project. When you ask Copilot to `create a tool that does X`, it can generate a solution very close to what you need. You simply accept its changes and restart `MCP` to get a new deterministic tool for your specific logic.
 
 ## Data Security
 
@@ -30,7 +30,7 @@ This document outlines potential data leak scenarios and provides guidance on ri
 
 - **Install file** `./build/install.sh`: 
   - Setup this extension inside project
-  - Setup `.Net` 
+  - Setup `.NET` 
   - Setup libraties
 
 - **mcp.json**
