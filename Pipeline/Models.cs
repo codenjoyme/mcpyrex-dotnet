@@ -37,12 +37,12 @@ namespace McpDotnet.Pipeline
             return new Dictionary<string, object>
             {
                 ["success"] = Success,
-                ["result"] = Result,
-                ["error"] = Error,
-                ["step"] = Step,
-                ["tool"] = Tool,
+                ["result"] = Result ?? (object)"",
+                ["error"] = Error ?? "",
+                ["step"] = Step ?? (object)"",
+                ["tool"] = Tool ?? "",
                 ["context"] = Context ?? new Dictionary<string, object>(),
-                ["execution_time"] = ExecutionTime
+                ["execution_time"] = ExecutionTime ?? (object)0.0
             };
         }
     }
