@@ -12,7 +12,7 @@ I have EPMXYZ-6369 ticket. Please process it.
 - When a request mentions a Jira ticket (by ID, URL, or reference), automatically process PDF attachments to extract and upload images back to the ticket.
 - Use the `work` folder for temporary files and processing artifacts.
 - Required environment variables: `JIRA_URL`, `JIRA_AUTH` (Bearer token) in `.env` file.
-- Please skip optional `.env` when using jira tools - it will be loaded automatically.
+- Please skip optional `.env` when using jira tools - it will be loaded automatically. Please don't copy `.env` file to other place. 
 - Everytime print link to the ticket.
 
 ## Processing steps
