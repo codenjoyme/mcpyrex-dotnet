@@ -200,6 +200,8 @@ if ($ideChoice -eq "c") {
     Write-Color "Configuring for Cursor..." $Green
     # Copy mcp.json for Cursor with workspaceFolder replacement
     Copy-ConfigFile "$CONFIG_BASE\.cursor\mcp.json" "..\..\/.cursor\mcp.json" $workspaceRoot
+    # Copy Cursor rules documentation
+    Copy-ConfigFile "$CONFIG_BASE\.cursor\rules\mcpyrex.mdc" "..\..\/.cursor\rules\mcpyrex.mdc" $workspaceRoot
 } else {
     Write-Color "Configuring for VSCode..." $Green
     # Copy VSCode configuration files
