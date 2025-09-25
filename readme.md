@@ -36,12 +36,12 @@ This document outlines potential data leak scenarios and provides guidance on ri
 
 **With git**
 ```powershell
-git clone https://github.com/mcpyrex/mcpyrex-dotnet.git .mcp-dotnet; cd .mcp-dotnet\build; .\install.ps1
+git clone https://github.com/codenjoyme/mcpyrex-dotnet.git .mcp-dotnet; cd .mcp-dotnet\build; .\install.ps1
 ```
 
 **Without git**
 ```powershell
-$work = ".mcp-dotnet"; $url = "https://github.com/mcpyrex/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; Invoke-WebRequest -Uri $url -OutFile "$work\project.zip"; Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
+$work = ".mcp-dotnet"; $url = "https://github.com/codenjoyme/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; Invoke-WebRequest -Uri $url -OutFile "$work\project.zip"; Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
 ```
 
 1. This script will:
@@ -122,7 +122,7 @@ This project is based on concepts from the blog post: [Как расширить
 
 ## Repository
 
-The original repository is available at: [https://github.com/mcpyrex/mcpyrex-dotnet.git](https://github.com/mcpyrex/mcpyrex-dotnet.git)
+The original repository is available at: [https://github.com/codenjoyme/mcpyrex-dotnet.git](https://github.com/codenjoyme/mcpyrex-dotnet.git)
 
 ## 🚀 Two Execution Modes
 
