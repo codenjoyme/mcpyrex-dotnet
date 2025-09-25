@@ -51,6 +51,11 @@ function Download-FileFast {
     param([string]$Url, [string]$OutputPath)
     
     try {
+        # Convert to absolute path to ensure correct location
+        if (-not [System.IO.Path]::IsPathRooted($OutputPath)) {
+            $OutputPath = Join-Path (Get-Location) $OutputPath
+        }
+        
         # Create directory if needed
         $outputDir = Split-Path $OutputPath -Parent
         if ($outputDir -and -not (Test-Path $outputDir)) {

@@ -41,7 +41,7 @@ git clone https://github.com/codenjoyme/mcpyrex-dotnet.git .mcp-dotnet; cd .mcp-
 
 **Without git**
 ```powershell
-$work = ".mcp-dotnet"; $url = "https://github.com/codenjoyme/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; Invoke-WebRequest -Uri $url -OutFile "$work\project.zip"; Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
+$work = ".mcp-dotnet"; $url = "https://github.com/codenjoyme/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; (New-Object System.Net.WebClient).DownloadFile($url, "$work\project.zip"); Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
 ```
 
 1. This script will:
