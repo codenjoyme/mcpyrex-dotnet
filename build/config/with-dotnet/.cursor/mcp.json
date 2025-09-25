@@ -3,7 +3,7 @@
     "mcpyrex-dotnet": {
         "type": "stdio",
         "command": "dotnet",
-        "args": ["run", "--project", "{{workspaceFolder}}\\.mcp-dotnet"]
+        "args": ["run", "--project", "{{workspaceFolder}}\\.mcp-dotnet\\mcp.csproj"]
     }
   }
 }
