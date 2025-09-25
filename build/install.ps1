@@ -93,7 +93,7 @@ function Copy-ConfigFile {
     
     # Create target directory if it doesn't exist
     $targetDir = Split-Path $TargetPath -Parent
-    if (-not (Test-Path $targetDir)) {
+    if ($targetDir -and $outputDir -ne "" -and -not (Test-Path $targetDir)) {
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
     }
     
