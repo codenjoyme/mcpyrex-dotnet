@@ -47,6 +47,37 @@ function Show-FileComparison {
     return $replace -eq "y"
 }
 
+function Download-FileFast {
+    param([string]$Url, [string]$OutputPath)
+    
+    try {
+        # Create directory if needed
+        $outputDir = Split-Path $OutputPath -Parent
+        if ($outputDir -and -not (Test-Path $outputDir)) {
+            New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+        }
+        
+        # Try fast .NET WebClient first
+        $webClient = New-Object System.Net.WebClient
+        $webClient.DownloadFile($Url, $OutputPath)
+        $webClient.Dispose()
+        
+        Write-Host "Downloaded: $(Split-Path $OutputPath -Leaf)" -ForegroundColor Green
+        
+    } catch {
+        Write-Host "Fast download failed, trying fallback method..." -ForegroundColor Yellow
+        if ($webClient) { $webClient.Dispose() }
+        
+        # Fallback to Invoke-WebRequest
+        try {
+            Invoke-WebRequest -Uri $Url -OutFile $OutputPath -UseBasicParsing
+            Write-Host "Downloaded: $(Split-Path $OutputPath -Leaf)" -ForegroundColor Green
+        } catch {
+            Write-Host "Download failed: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+}
+
 function Copy-ConfigFile {
     param([string]$SourcePath, [string]$TargetPath, [string]$WorkspaceRoot = $null)
     
@@ -130,7 +161,7 @@ if (-not $dotnetFound) {
     
     # Download PowerShell installer
     Write-Color "Downloading .NET install script..." $Yellow
-    Invoke-Echo "Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'"
+    Download-FileFast "https://dot.net/v1/dotnet-install.ps1" "dotnet-install.ps1"
     
     # Install .NET SDK to workspace root
     Invoke-Echo ".\dotnet-install.ps1 -Channel 8.0 -InstallDir ..\..\.dotnet"
