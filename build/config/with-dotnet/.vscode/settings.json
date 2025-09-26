@@ -1,7 +1,7 @@
 {
     "chat.mcp.enabled": true,
     "github.copilot.chat.codeGeneration.useInstructionFiles": true,
-    "chat.agent.maxRequests": 25,
+    "chat.agent.maxRequests": 250,
     "chat.tools.terminal.autoApprove": {
         // "git": false,
         // "/.*/": true,
