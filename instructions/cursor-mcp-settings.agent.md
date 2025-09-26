@@ -1,4 +1,4 @@
-- Links contains `{workspaceFolder}` which should be replaced with absolute path to the project.
+- Links contains `{{workspaceFolder}}` which should be replaced with absolute path to the project.
  - For example for Windows.
  ```json
  {
