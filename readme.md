@@ -30,19 +30,36 @@ This document outlines potential data leak scenarios and provides guidance on ri
 
 ## Getting Started
 
-1. Run this command in the root folder of your project and follow instructions:
+Run this command in the root folder of your project and follow instructions:
 
-**One-line installation (copy-paste friendly):**
+### One-line installation (copy-paste friendly):
+
+#### Windows
 
 **With git**
 ```powershell
-git clone https://github.com/codenjoyme/mcpyrex-dotnet.git .mcp-dotnet; cd .mcp-dotnet\build; .\install.ps1
+git clone https://github.com/codenjoyme/mcpyrex-dotnet.git .mcp-dotnet; cd .mcp-dotnet\build; .\install-windows.ps1
 ```
 
 **Without git**
 ```powershell
-$work = ".mcp-dotnet"; $url = "https://github.com/codenjoyme/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; (New-Object System.Net.WebClient).DownloadFile($url, "$work\project.zip"); Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install.ps1
+$work = ".mcp-dotnet"; $url = "https://github.com/codenjoyme/mcpyrex-dotnet/archive/refs/heads/main.zip"; New-Item -ItemType Directory -Force -Path $work; (New-Object System.Net.WebClient).DownloadFile($url, "$work\project.zip"); Expand-Archive -Path "$work\project.zip" -DestinationPath "$work\tmp"; Remove-Item "$work\project.zip"; Move-Item "$work\tmp\mcpyrex-dotnet-main\*" "$work"; Move-Item "$work\tmp\mcpyrex-dotnet-main\.*" "$work" -Force; Remove-Item "$work\tmp" -Recurse; Set-Location "$work\build"; .\install-windows.ps1
 ```
+
+**Update existing installation:**
+```powershell
+cd .\.mcp-dotnet\build; .\install-windows.ps1
+```
+
+#### Macos
+
+TBD
+
+#### Linux
+
+TBD
+
+### Installation process
 
 1. This script will:
    - Download the latest version from GitHub to `./.mcp-dotnet` folder
@@ -62,12 +79,6 @@ $work = ".mcp-dotnet"; $url = "https://github.com/codenjoyme/mcpyrex-dotnet/arch
    - Your workspace settings will be updated
    - GitHub Copilot instructions will be in place  
    - Start using enhanced GitHub Copilot capabilities!
-
-**Update existing installation:**
-```powershell
-# Navigate to existing installation and update
-cd .mcp-dotnet\build; .\install.ps1
-```
 
 ## MCP Configuration
 
