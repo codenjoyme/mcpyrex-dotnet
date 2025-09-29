@@ -51,6 +51,20 @@ $work = ".mcp-dotnet"; $url = "https://github.com/codenjoyme/mcpyrex-dotnet/arch
 cd .\.mcp-dotnet\build; .\install-windows.ps1
 ```
 
+**Security policy issues**
+If you got this error:
+```powershell
+.\install-windows.ps1 : File C:\workspace\mcp_server\build\install-windows.ps1 cannot be loaded because running scripts is disabled on this system. For more information, see about_Execution_Policies at https://go.microsoft.com/fwlink/?LinkID=135170.
+At line:1 char:510
++ ... work\tmp" -Recurse; Set-Location "$work\build"; .\install-windows.ps1
+    + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+```
+Please run before script:
+```powershell
+Get-ExecutionPolicy Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
 #### Macos
 
 TBD
