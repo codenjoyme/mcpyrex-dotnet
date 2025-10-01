@@ -15,6 +15,7 @@ I have EPMXYZ-6369 ticket. Please process it.
 - Please skip optional `.env` when using jira tools - it will be loaded automatically. Please don't copy `.env` file to other place. 
 - Everytime print link to the ticket.
 - When you are creating new tool please use one folder for it `lng_pdf_extract_image`, not `lng_pdf\extract_image`.
+- Please use this libraries: `UglyToad.PdfPig`, `SixLabors.ImageSharp`.
 
 ## Processing steps
 1. Track all these steps in your tasklist (by using `todos` builtin tool).
