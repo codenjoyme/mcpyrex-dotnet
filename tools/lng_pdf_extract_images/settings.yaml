@@ -1,0 +1,5 @@
+enabled: true
+description: "PDF image extraction tool with PNG/JPEG support and comprehensive metadata"
+dependencies:
+  - UglyToad.PdfPig
+  - SixLabors.ImageSharp
